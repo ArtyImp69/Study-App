@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Student AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Ask the ai</h1>
+
+    <div id="responseArea"></div>
+
+    <form id="promptForm">
+    <textarea id="promptInput" placeholder="Write somthing" rows="1"></textarea>
+    <button type="submit">Send</button>
+</form>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const textarea = document.getElementById('promptInput');
+        const responseArea = document.getElementById('responseArea');
+
+        // Fai crescere la textarea automaticamente
+        textarea.addEventListener('input', () => {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        });
+
+        // Gestione invio
+        document.getElementById('promptForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const prompt = textarea.value.trim();
+            if (!prompt) return;
+
+            responseArea.textContent = "Thinking...";
+
+            try {
+                const response = await fetch('http://localhost:8080/ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const text = await response.text();
+                responseArea.textContent = text;
+            } catch (error) {
+                responseArea.textContent = "Errore nella richiesta.";
+                console.error('Errore:', error);
+            }
+        });
+    });
+</script>
+</body>
+</html>
